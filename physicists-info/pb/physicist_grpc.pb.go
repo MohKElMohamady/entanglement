@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type PhysicistsInfoClient interface {
 	GetPhysicistById(ctx context.Context, in *UUID, opts ...grpc.CallOption) (*Physicist, error)
 	AddPhysicist(ctx context.Context, in *Physicist, opts ...grpc.CallOption) (*Physicist, error)
-	GetAllPhysicist(ctx context.Context, in *Physicist, opts ...grpc.CallOption) (*AllPhysicists, error)
+	GetAllPhysicist(ctx context.Context, in *AllPhysicistsRequest, opts ...grpc.CallOption) (*AllPhysicists, error)
 }
 
 type physicistsInfoClient struct {
@@ -53,7 +53,7 @@ func (c *physicistsInfoClient) AddPhysicist(ctx context.Context, in *Physicist, 
 	return out, nil
 }
 
-func (c *physicistsInfoClient) GetAllPhysicist(ctx context.Context, in *Physicist, opts ...grpc.CallOption) (*AllPhysicists, error) {
+func (c *physicistsInfoClient) GetAllPhysicist(ctx context.Context, in *AllPhysicistsRequest, opts ...grpc.CallOption) (*AllPhysicists, error) {
 	out := new(AllPhysicists)
 	err := c.cc.Invoke(ctx, "/physicist_info.PhysicistsInfo/getAllPhysicist", in, out, opts...)
 	if err != nil {
@@ -68,7 +68,7 @@ func (c *physicistsInfoClient) GetAllPhysicist(ctx context.Context, in *Physicis
 type PhysicistsInfoServer interface {
 	GetPhysicistById(context.Context, *UUID) (*Physicist, error)
 	AddPhysicist(context.Context, *Physicist) (*Physicist, error)
-	GetAllPhysicist(context.Context, *Physicist) (*AllPhysicists, error)
+	GetAllPhysicist(context.Context, *AllPhysicistsRequest) (*AllPhysicists, error)
 	mustEmbedUnimplementedPhysicistsInfoServer()
 }
 
@@ -82,7 +82,7 @@ func (UnimplementedPhysicistsInfoServer) GetPhysicistById(context.Context, *UUID
 func (UnimplementedPhysicistsInfoServer) AddPhysicist(context.Context, *Physicist) (*Physicist, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPhysicist not implemented")
 }
-func (UnimplementedPhysicistsInfoServer) GetAllPhysicist(context.Context, *Physicist) (*AllPhysicists, error) {
+func (UnimplementedPhysicistsInfoServer) GetAllPhysicist(context.Context, *AllPhysicistsRequest) (*AllPhysicists, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPhysicist not implemented")
 }
 func (UnimplementedPhysicistsInfoServer) mustEmbedUnimplementedPhysicistsInfoServer() {}
@@ -135,7 +135,7 @@ func _PhysicistsInfo_AddPhysicist_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _PhysicistsInfo_GetAllPhysicist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Physicist)
+	in := new(AllPhysicistsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func _PhysicistsInfo_GetAllPhysicist_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/physicist_info.PhysicistsInfo/getAllPhysicist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhysicistsInfoServer).GetAllPhysicist(ctx, req.(*Physicist))
+		return srv.(PhysicistsInfoServer).GetAllPhysicist(ctx, req.(*AllPhysicistsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

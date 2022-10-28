@@ -7,9 +7,11 @@ import "google/protobuf/wrappers.proto";
 service PhysicistsInfo {
   rpc getPhysicistById(UUID) returns (Physicist);
   rpc addPhysicist(Physicist) returns (Physicist);
-  rpc getAllPhysicist(Physicist) returns (AllPhysicists);
+  rpc getAllPhysicist(AllPhysicistsRequest) returns (AllPhysicists);
 //  rpc getPhysicistsByCountryOfBirth(google.protobuf.StringValue) returns (stream Physicist);
 }
+
+message AllPhysicistsRequest {}
 
 message UUID {
   string uuidInString = 1;
