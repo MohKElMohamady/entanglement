@@ -4,6 +4,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"physicists-info/handlers"
 	"physicists-info/pb"
 	physicistsInfoServer "physicists-info/server"
 )
@@ -18,7 +19,7 @@ func main() {
 		log.Fatalln("Could not listen to the port, maybe it is already used?")
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(handlers.RequestLoggerHandler))
 	pb.RegisterPhysicistsInfoServer(server, &physicistsInfoServer.PhysicistsInfoServer{})
 	log.Println("Starting gRPC listener on port", port)
 	if err := server.Serve(listener); err != nil {
