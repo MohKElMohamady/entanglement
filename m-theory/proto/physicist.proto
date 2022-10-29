@@ -8,7 +8,7 @@ service PhysicistsInfo {
   rpc getPhysicistById(UUID) returns (Physicist);
   rpc addPhysicist(Physicist) returns (Physicist);
   rpc getAllPhysicist(AllPhysicistsRequest) returns (AllPhysicists);
-//  rpc getPhysicistsByCountryOfBirth(google.protobuf.StringValue) returns (stream Physicist);
+  rpc getPhysicistsByCountryOfBirth(google.protobuf.StringValue) returns (stream Physicist);
 }
 
 message AllPhysicistsRequest {}

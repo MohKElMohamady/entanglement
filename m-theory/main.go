@@ -25,4 +25,7 @@ func main() {
 	albert, _ := myClient.GetPhysicistByUuid(albertUuid)
 
 	log.Println(albert.FirstName)
+
+	myClient.GetPhysicistByCountryOfBirth("Germany")
+
 }

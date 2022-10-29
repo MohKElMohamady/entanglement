@@ -3,6 +3,8 @@ package clients
 import (
 	"context"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+	"io"
 	"log"
 	"m-theory/pb"
 	"time"
@@ -39,4 +41,22 @@ func (c physicistsInfoClient) GetAllPhysicists() (*pb.AllPhysicists, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	return c.client.GetAllPhysicist(ctx, &pb.AllPhysicistsRequest{})
+}
+
+func (c physicistsInfoClient) GetPhysicistByCountryOfBirth(countryOfBirth string) []pb.Physicist {
+	var physcistsOfThatCountry = []pb.Physicist{}
+	ctx := context.Background()
+	physicistStream, _ := c.client.GetPhysicistsByCountryOfBirth(ctx, &wrapperspb.StringValue{Value: countryOfBirth})
+
+	for {
+		physicist, err := physicistStream.Recv()
+		if err == io.EOF {
+			break
+		}
+		physcistsOfThatCountry = append(physcistsOfThatCountry, *physicist)
+	}
+	for _, physicist := range physcistsOfThatCountry {
+		log.Println("Found physicists who are named " + physicist.FirstName + " " + physicist.LastName + " living in " + countryOfBirth)
+	}
+	return physcistsOfThatCountry
 }
