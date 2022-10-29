@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -25,6 +26,7 @@ type PhysicistsInfoClient interface {
 	GetPhysicistById(ctx context.Context, in *UUID, opts ...grpc.CallOption) (*Physicist, error)
 	AddPhysicist(ctx context.Context, in *Physicist, opts ...grpc.CallOption) (*Physicist, error)
 	GetAllPhysicist(ctx context.Context, in *AllPhysicistsRequest, opts ...grpc.CallOption) (*AllPhysicists, error)
+	GetPhysicistsByCountryOfBirth(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (PhysicistsInfo_GetPhysicistsByCountryOfBirthClient, error)
 }
 
 type physicistsInfoClient struct {
@@ -62,6 +64,38 @@ func (c *physicistsInfoClient) GetAllPhysicist(ctx context.Context, in *AllPhysi
 	return out, nil
 }
 
+func (c *physicistsInfoClient) GetPhysicistsByCountryOfBirth(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (PhysicistsInfo_GetPhysicistsByCountryOfBirthClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PhysicistsInfo_ServiceDesc.Streams[0], "/physicist_info.PhysicistsInfo/getPhysicistsByCountryOfBirth", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &physicistsInfoGetPhysicistsByCountryOfBirthClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type PhysicistsInfo_GetPhysicistsByCountryOfBirthClient interface {
+	Recv() (*Physicist, error)
+	grpc.ClientStream
+}
+
+type physicistsInfoGetPhysicistsByCountryOfBirthClient struct {
+	grpc.ClientStream
+}
+
+func (x *physicistsInfoGetPhysicistsByCountryOfBirthClient) Recv() (*Physicist, error) {
+	m := new(Physicist)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PhysicistsInfoServer is the server API for PhysicistsInfo service.
 // All implementations must embed UnimplementedPhysicistsInfoServer
 // for forward compatibility
@@ -69,6 +103,7 @@ type PhysicistsInfoServer interface {
 	GetPhysicistById(context.Context, *UUID) (*Physicist, error)
 	AddPhysicist(context.Context, *Physicist) (*Physicist, error)
 	GetAllPhysicist(context.Context, *AllPhysicistsRequest) (*AllPhysicists, error)
+	GetPhysicistsByCountryOfBirth(*wrapperspb.StringValue, PhysicistsInfo_GetPhysicistsByCountryOfBirthServer) error
 	mustEmbedUnimplementedPhysicistsInfoServer()
 }
 
@@ -84,6 +119,9 @@ func (UnimplementedPhysicistsInfoServer) AddPhysicist(context.Context, *Physicis
 }
 func (UnimplementedPhysicistsInfoServer) GetAllPhysicist(context.Context, *AllPhysicistsRequest) (*AllPhysicists, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPhysicist not implemented")
+}
+func (UnimplementedPhysicistsInfoServer) GetPhysicistsByCountryOfBirth(*wrapperspb.StringValue, PhysicistsInfo_GetPhysicistsByCountryOfBirthServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetPhysicistsByCountryOfBirth not implemented")
 }
 func (UnimplementedPhysicistsInfoServer) mustEmbedUnimplementedPhysicistsInfoServer() {}
 
@@ -152,6 +190,27 @@ func _PhysicistsInfo_GetAllPhysicist_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PhysicistsInfo_GetPhysicistsByCountryOfBirth_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(wrapperspb.StringValue)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(PhysicistsInfoServer).GetPhysicistsByCountryOfBirth(m, &physicistsInfoGetPhysicistsByCountryOfBirthServer{stream})
+}
+
+type PhysicistsInfo_GetPhysicistsByCountryOfBirthServer interface {
+	Send(*Physicist) error
+	grpc.ServerStream
+}
+
+type physicistsInfoGetPhysicistsByCountryOfBirthServer struct {
+	grpc.ServerStream
+}
+
+func (x *physicistsInfoGetPhysicistsByCountryOfBirthServer) Send(m *Physicist) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // PhysicistsInfo_ServiceDesc is the grpc.ServiceDesc for PhysicistsInfo service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -172,6 +231,12 @@ var PhysicistsInfo_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PhysicistsInfo_GetAllPhysicist_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "getPhysicistsByCountryOfBirth",
+			Handler:       _PhysicistsInfo_GetPhysicistsByCountryOfBirth_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "proto/physicist.proto",
 }

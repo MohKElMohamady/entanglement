@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"physicists-info/pb"
-	s "physicists-info/server"
+	physicistsInfoServer "physicists-info/server"
 )
 
 const (
@@ -19,8 +19,7 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	pb.RegisterPhysicistsInfoServer(server, &s.PhysicistsInfoServer{})
-
+	pb.RegisterPhysicistsInfoServer(server, &physicistsInfoServer.PhysicistsInfoServer{})
 	log.Println("Starting gRPC listener on port", port)
 	if err := server.Serve(listener); err != nil {
 		log.Fatalln("Failed to serve the server: %v", err.Error())
