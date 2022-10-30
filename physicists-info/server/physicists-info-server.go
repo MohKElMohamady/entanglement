@@ -1,7 +1,8 @@
 package server
 
 import (
-	context "context"
+	"context"
+	pb "cosmological-constant/pb"
 	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc/codes"
@@ -9,8 +10,6 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"log"
 	"physicists-info/models"
-	pb "physicists-info/pb"
-
 	"time"
 )
 
@@ -21,7 +20,7 @@ var physicists = []models.Physicist{
 	models.NewPhysicist("Hermann", "Minkowski", "The United States", time.UnixMilli(-1918737600), time.UnixMilli(865153200), "ADJUST DATE"),
 	models.NewPhysicist("Robert", "Oppenheimer", "The United States", time.UnixMilli(-2073134400), time.UnixMilli(-90513600), ""),
 	models.NewPhysicist("Lawrence Maxwell", "Krauss", "The United States", time.UnixMilli(-492273600), time.Now(), ""),
-	models.NewPhysicist("Leo", "Szilard", "Hungary", time.UnixMilli(-2268484800), time.UnixMilli(-176395200), ""),
+	models.NewPhysicist("Leo", "Szilard", "Austria-Hungary", time.UnixMilli(-2268484800), time.UnixMilli(-176395200), ""),
 	models.NewPhysicist("James", "Franck", "Germany", time.UnixMilli(-2724935608), time.UnixMilli(-177172800), ""),
 	models.NewPhysicist("Hans", "Bethe", "Germany", time.UnixMilli(-1918737600), time.UnixMilli(865153200), "ADJUST DATE"),
 	models.NewPhysicist("Richard", "Feynman", "The United States", time.UnixMilli(-1918737600), time.UnixMilli(865153200), "ADJUST DATE"),
@@ -46,7 +45,7 @@ func (p PhysicistsInfoServer) GetAllPhysicist(ctx context.Context, request *pb.A
 	var returnedPhysicists = []*pb.Physicist{}
 	for _, physicist := range physicists {
 		returnedPhysicists = append(returnedPhysicists, &pb.Physicist{
-			PhysicistId:    &pb.UUID{UuidInString: physicist.PhysicistId.String()},
+			PhysicistId:    wrapperspb.String(physicist.PhysicistId.String()),
 			FirstName:      physicist.FirstName,
 			LastName:       physicist.LastName,
 			CountryOfBirth: physicist.CountryOfBirth,
@@ -58,11 +57,11 @@ func (p PhysicistsInfoServer) GetAllPhysicist(ctx context.Context, request *pb.A
 	return &pb.AllPhysicists{Physicists: returnedPhysicists}, status.New(codes.OK, "").Err()
 }
 
-func (p PhysicistsInfoServer) GetPhysicistById(ctx context.Context, uuid *pb.UUID) (*pb.Physicist, error) {
+func (p PhysicistsInfoServer) GetPhysicistById(ctx context.Context, uuid *wrapperspb.StringValue) (*pb.Physicist, error) {
 	for _, physicist := range physicists {
-		if uuid.UuidInString == physicist.PhysicistId.String() {
+		if uuid.Value == physicist.PhysicistId.String() {
 			return &pb.Physicist{
-				PhysicistId:    &pb.UUID{UuidInString: physicist.PhysicistId.String()},
+				PhysicistId:    wrapperspb.String(physicist.PhysicistId.String()),
 				FirstName:      physicist.FirstName,
 				LastName:       physicist.LastName,
 				CountryOfBirth: physicist.CountryOfBirth,
@@ -77,7 +76,7 @@ func (p PhysicistsInfoServer) GetPhysicistById(ctx context.Context, uuid *pb.UUI
 
 func (p PhysicistsInfoServer) AddPhysicist(ctx context.Context, physicist *pb.Physicist) (*pb.Physicist, error) {
 	newPhysicist := models.Physicist{
-		PhysicistId:    uuid.FromStringOrNil(physicist.PhysicistId.UuidInString),
+		PhysicistId:    uuid.FromStringOrNil(physicist.PhysicistId.String()),
 		FirstName:      physicist.FirstName,
 		LastName:       physicist.LastName,
 		CountryOfBirth: physicist.CountryOfBirth,
@@ -96,7 +95,7 @@ func (p PhysicistsInfoServer) GetPhysicistsByCountryOfBirth(value *wrapperspb.St
 	for _, physicist := range physicists {
 		if physicist.CountryOfBirth == value.Value {
 			err := server.Send(&pb.Physicist{
-				PhysicistId:    &pb.UUID{UuidInString: physicist.PhysicistId.String()},
+				PhysicistId:    wrapperspb.String(physicist.PhysicistId.String()),
 				FirstName:      physicist.FirstName,
 				LastName:       physicist.LastName,
 				CountryOfBirth: physicist.CountryOfBirth,

@@ -2,11 +2,11 @@ package clients
 
 import (
 	"context"
+	"cosmological-constant/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"io"
 	"log"
-	"m-theory/pb"
 	"time"
 )
 
@@ -34,7 +34,7 @@ func NewPhysicistsInfoClient() *physicistsInfoClient {
 func (c physicistsInfoClient) GetPhysicistByUuid(uuid string) (*pb.Physicist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	return c.client.GetPhysicistById(ctx, &pb.UUID{UuidInString: uuid})
+	return c.client.GetPhysicistById(ctx, &wrapperspb.StringValue{Value: uuid})
 }
 
 func (c physicistsInfoClient) GetAllPhysicists() (*pb.AllPhysicists, error) {

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"cosmological-constant/pb"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 	"physicists-info/handlers"
-	"physicists-info/pb"
-	physicistsInfoServer "physicists-info/server"
+	"physicists-info/server"
 )
 
 const (
@@ -19,10 +19,10 @@ func main() {
 		log.Fatalln("Could not listen to the port, maybe it is already used?")
 	}
 
-	server := grpc.NewServer(grpc.UnaryInterceptor(handlers.RequestLoggerHandler))
-	pb.RegisterPhysicistsInfoServer(server, &physicistsInfoServer.PhysicistsInfoServer{})
+	s := grpc.NewServer(grpc.UnaryInterceptor(handlers.RequestLoggerHandler))
+	pb.RegisterPhysicistsInfoServer(s, server.PhysicistsInfoServer{})
 	log.Println("Starting gRPC listener on port", port)
-	if err := server.Serve(listener); err != nil {
+	if err := s.Serve(listener); err != nil {
 		log.Fatalln("Failed to serve the server: %v", err.Error())
 	}
 }

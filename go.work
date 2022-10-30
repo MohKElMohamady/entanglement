@@ -1,0 +1,8 @@
+go 1.18
+
+use (
+	./cosmological-constant
+	./physicists-info
+	./solvay
+	./m-theory
+)

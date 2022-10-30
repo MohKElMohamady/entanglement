@@ -17,7 +17,7 @@ func main() {
 
 	for _, physicist := range physicists.Physicists {
 		if physicist.FirstName == "Albert" {
-			albertUuid = physicist.PhysicistId.UuidInString
+			albertUuid = physicist.PhysicistId.String()
 		}
 		log.Println(physicist.FirstName)
 	}
