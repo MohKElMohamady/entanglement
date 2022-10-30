@@ -1,0 +1,29 @@
+syntax = "proto3";
+package cosmological_constant;
+option go_package = "../pb";
+
+import "google/protobuf/wrappers.proto";
+
+
+service PhysicistsInfo {
+  rpc getPhysicistById(google.protobuf.StringValue) returns (Physicist);
+  rpc addPhysicist(Physicist) returns (Physicist);
+  rpc getAllPhysicist(AllPhysicistsRequest) returns (AllPhysicists);
+  rpc getPhysicistsByCountryOfBirth(google.protobuf.StringValue) returns (stream Physicist);
+}
+
+message AllPhysicistsRequest {}
+
+message Physicist {
+  google.protobuf.StringValue physicistId = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string countryOfBirth = 4;
+  int64 dateOfBirth = 5;
+  int64 dateOfDeath = 6;
+  string biography = 7;
+}
+
+message AllPhysicists {
+  repeated Physicist physicists = 1;
+}

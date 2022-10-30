@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package cosmological_constant;
+option go_package = "../pb";
+import "google/protobuf/wrappers.proto";
+import "proto/physicist.proto";
+service SolvayService {
+  rpc GetConferencesForPhysicists(stream Physicist) returns (DesignatedConferences);
+}
+
+message Conference {
+  google.protobuf.StringValue conferenceId = 1;
+  string name = 2;
+  string location= 3;
+  string description = 4;
+  int64 startTime = 5;
+  int64 endTime = 6;
+  repeated Physicist physicistsInConference = 7;
+}
+
+message DesignatedConferences {
+  repeated Conference conferences = 1;
+}
