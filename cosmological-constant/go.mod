@@ -1,4 +1,4 @@
-module cosmological-constants
+module cosmological-constant
 
 require (
 	github.com/satori/go.uuid v1.2.0
